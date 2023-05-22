@@ -17,76 +17,111 @@ namespace T1SimpleFigures_Mubasshera
         AntiClockwise
     }
 
-    public class Figure 
+    public abstract class Figure 
     {
+        protected Direction dir { set; get; }
+        protected Rotation rot;
         public virtual void SayName()
         {
-            Console.WriteLine("I am a Figure \n");
+            Console.WriteLine("I am a simple Figure ");
         }
         public virtual void Move(Direction d)
         {
-            Console.WriteLine("Moving " + d + "\n");
+            dir=d;
         }
 
         public virtual void Rotate(Rotation r)
         {
-            Console.WriteLine("Rotating " + r + "\n"); 
+            rot=r;
         }
+        public virtual void Display() { }
     }
 
     public class Point : Figure
     {
-
-        public override void SayName()
+        public override void Display()
         {
-            Console.WriteLine("I am a Point. ");
+            Console.WriteLine("I am a Point. Moving "+ dir+ " And rotating "+ rot);  
         }
     }
 
     public class Circle : Figure
     {
-        public override void SayName()
+        public override void Display()
         {
-            Console.WriteLine("I am a Circle. ");
+            Console.WriteLine("I am a Circle. Moving " + dir + " And rotating " + rot);
         }
     }
 
 
     public class Line : Figure 
     {
-        public override void SayName()
+        public override void Display()
         {
-            Console.WriteLine("I am a Line. ");
+            Console.WriteLine("I am a Line. Moving " + dir + " And rotating " + rot);
         }
     }
 
     public class Aggregate
     {
-        //private List<Figure> FiguresList { get; set; }
-
-        //private Figure[] FigureArray;
-        public Figure Figure { set; get; }
         public Direction Dir { set; get; }
         public Rotation Rot { set; get; }
-        public int No_figs { set;  get; }
-        public int Fig_Quantity { set; get; }
-        
-        public Aggregate (Figure F, Direction D, Rotation R)
+
+        private List<Figure> figures;
+        public int No_circles { set;  get; }
+        public int No_points { set; get; }
+        public int No_lines { set; get; }
+
+        public Aggregate(List<Figure> F, Direction D, Rotation R, int no_c=0, int no_p=0, int no_l=0)
         {
-            Figure = F;
+            No_circles = no_c;
+            No_points = no_p;
+            No_lines = no_l;
+
+            figures = F;
+
+            AddFigures(new Circle(), no_c);
+            AddFigures(new Point(), no_p);
+            AddFigures(new Line(), no_l);
+
             Dir = D;
             Rot = R;
-            Figure.SayName();
         }
 
-        public void Move ()
-        {
-            Figure.Move(Dir);
+        public void AddFigures(Figure f, int quantity)
+        { 
+            if(quantity>0)
+            {
+                for (int i = 0; i < quantity; i++)
+                {
+                    figures.Add((Figure)Activator.CreateInstance(f.GetType()));
+                }
+            }
+            
         }
 
-        public void Rotate ()
+        public void MoveAll()
         {
-            Figure.Rotate(Rot); 
+            foreach (Figure f in figures)
+            {
+                f.Move(Dir);
+            }
+        }
+
+        public void RotateAll()
+        {
+            foreach (Figure f in figures)
+            {
+                f.Rotate(Rot);
+            }
+        }
+
+        public void DisplayAll()
+        {
+            foreach (Figure f in figures)
+            {
+                f.Display();
+            }
         }
     }
 
@@ -94,11 +129,52 @@ namespace T1SimpleFigures_Mubasshera
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-            Figure circle = new Circle();
-            Aggregate aggregate = new Aggregate(circle, Direction.Left, Rotation.Clockwise);
-            aggregate.Move();
-            aggregate.Rotate();
+            List<Figure> figures = new List<Figure> ();
+
+            //Getting random no. number of Figures 
+            Console.WriteLine("Enter the number of circles: ");
+            int No_circles = Convert.ToInt32(Console.ReadLine());
+
+            Console.WriteLine("Enter the number of points: ");
+            int No_points = Convert.ToInt32(Console.ReadLine());
+
+            Console.WriteLine("Enter the number of lines: ");
+            int No_lines = Convert.ToInt32(Console.ReadLine());
+
+            //Getting directions for Move and Rotation
+            Console.WriteLine("Enter the direction (Left, Right, Up, Down): ");
+            string directionInput = Console.ReadLine();
+
+            Direction direction=Direction.Left;//default
+            if (Enum.IsDefined(typeof(Direction), directionInput))
+            {
+                direction = (Direction)Enum.Parse(typeof(Direction), directionInput);
+                Console.WriteLine("Direction: " + direction);
+            }
+            else
+            {
+                Console.WriteLine("Invalid direction input!");
+            }
+
+            Console.WriteLine("Enter the rotation (Clockwise, AntiClockwise): ");
+            string rotationInput = Console.ReadLine();
+
+            Rotation rotation=Rotation.Clockwise;//default
+            if (Enum.IsDefined(typeof(Rotation), rotationInput))
+            {
+                rotation = (Rotation)Enum.Parse(typeof(Rotation), rotationInput);
+                Console.WriteLine("Rotation: " + rotation);
+            }
+            else
+            {
+                Console.WriteLine("Invalid rotation input!");
+            }
+
+
+            Aggregate aggregate = new Aggregate(figures, direction, rotation, No_circles, No_points, No_lines);
+            aggregate.MoveAll();
+            aggregate.RotateAll();
+            aggregate.DisplayAll();
         }
     }
 }
