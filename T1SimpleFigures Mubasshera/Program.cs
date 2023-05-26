@@ -146,10 +146,10 @@ namespace T1SimpleFigures_Mubasshera
             string directionInput = Console.ReadLine();
 
             Direction direction=Direction.Left;//default
-            if (Enum.IsDefined(typeof(Direction), directionInput))
+            if (Enum.TryParse(directionInput, true, out Direction result))
             {
-                direction = (Direction)Enum.Parse(typeof(Direction), directionInput);
-                Console.WriteLine("Direction: " + direction);
+                direction = result;
+                Console.WriteLine("Direction: " + direction + "\n");
             }
             else
             {
@@ -160,10 +160,10 @@ namespace T1SimpleFigures_Mubasshera
             string rotationInput = Console.ReadLine();
 
             Rotation rotation=Rotation.Clockwise;//default
-            if (Enum.IsDefined(typeof(Rotation), rotationInput))
+            if (Enum.TryParse(rotationInput, true, out Rotation rotResult))
             {
-                rotation = (Rotation)Enum.Parse(typeof(Rotation), rotationInput);
-                Console.WriteLine("Rotation: " + rotation);
+                rotation = rotResult;
+                Console.WriteLine("Rotation: " + rotation + "\n");
             }
             else
             {
